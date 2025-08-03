@@ -16,7 +16,7 @@
     <link rel="preload" href="fonts/Gilmer Light.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="fonts/Gilmer Bold.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="fonts/conthrax-sb.otf" as="font" type="font/otf" crossorigin>
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=3.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" defer></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
@@ -1307,6 +1307,13 @@
         
         console.log("✅ Phishing sorusu başarıyla yüklendi");
         
+        // Font boyutlarını ayarla (mobil uyumluluk)
+        setTimeout(() => {
+            if (typeof adjustPhishingButtonFonts === 'function') {
+                adjustPhishingButtonFonts();
+            }
+        }, 100);
+        
         // İlk soru başarıyla yüklendiyse timeout'u iptal et
         if (currentPhishingQuestion === 0 && window.phishingTimeoutId) {
             clearTimeout(window.phishingTimeoutId);
@@ -2176,6 +2183,55 @@
             console.log("📱 Mobil cihaz algılandı - Firebase optimizasyonu aktif");
         }
 
+        // Dynamic font sizing for phishing buttons (mobile fix)
+        function adjustPhishingButtonFonts() {
+            const phishingButtons = document.querySelectorAll('.phishing-button div');
+            phishingButtons.forEach(button => {
+                const container = button.closest('.phishing-button');
+                if (container) {
+                    const containerWidth = container.offsetWidth;
+                    const containerHeight = container.offsetHeight;
+                    
+                    // Calculate optimal font size based on container dimensions
+                    let fontSize = Math.min(
+                        containerWidth * 0.025,  // 2.5% of width
+                        containerHeight * 0.15,  // 15% of height
+                        16 // Maximum 16px
+                    );
+                    
+                    fontSize = Math.max(fontSize, 9); // Minimum 9px
+                    button.style.fontSize = fontSize + 'px';
+                    
+                    console.log(`📱 Button font adjusted: ${fontSize}px (${containerWidth}x${containerHeight})`);
+                }
+            });
+        }
+
+        // Apply font adjustment on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(adjustPhishingButtonFonts, 250);
+        });
+
+        // Apply font adjustment when phishing panel becomes visible
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const target = mutation.target;
+                    if (target.id === 'phishing-panel' && target.style.display !== 'none') {
+                        setTimeout(adjustPhishingButtonFonts, 100);
+                    }
+                }
+            });
+        });
+
+        // Start observing phishing panel
+        const phishingPanel = document.getElementById('phishing-panel');
+        if (phishingPanel) {
+            observer.observe(phishingPanel, { attributes: true });
+        }
+
         // Add service worker for PWA functionality
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -2357,11 +2413,18 @@
                  }
              });
              
-             console.log(`✅ ${buttons.length} phishing butonu hazırlandı`);
-             
-             // İlk soruyu göster
-             currentPhishingQuestion = 0;
-             showNextPhishingQuestion();
+                         console.log(`✅ ${buttons.length} phishing butonu hazırlandı`);
+            
+            // Font boyutlarını ayarla (mobil uyumluluk)
+            setTimeout(() => {
+                if (typeof adjustPhishingButtonFonts === 'function') {
+                    adjustPhishingButtonFonts();
+                }
+            }, 50);
+            
+            // İlk soruyu göster
+            currentPhishingQuestion = 0;
+            showNextPhishingQuestion();
          };
     });
     </script>
