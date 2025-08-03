@@ -2,40 +2,23 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a1428">
-    <title>Siber Macera - Teknofest</title>
-    <!-- Preconnect for better loading performance -->
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>Siber Macera</title>
     <!-- Font preload for faster loading -->
     <link rel="preload" href="fonts/Gilmer Regular.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="fonts/Gilmer Light.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="fonts/Gilmer Bold.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="fonts/conthrax-sb.otf" as="font" type="font/otf" crossorigin>
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" defer></script>
-    <!-- Mobile Console for debugging -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-        // Only load console on mobile devices or when debugging
-        if (window.innerWidth <= 768 || window.location.search.includes('debug=1')) {
-            eruda.init();
-            console.log('📱 Mobil console aktif! Sağ alttaki simgeye tıklayın.');
-        }
-    </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js" defer></script>
-    
-    <!-- PWA Manifest for mobile installation -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="assets/Asset 5.svg">
   </head>
   <body>
       <!-- Yükleme Ekranı -->
@@ -1316,13 +1299,6 @@
         
         console.log("✅ Phishing sorusu başarıyla yüklendi");
         
-        // Font boyutlarını ayarla (mobil uyumluluk)
-        setTimeout(() => {
-            if (typeof adjustPhishingButtonFonts === 'function') {
-                adjustPhishingButtonFonts();
-            }
-        }, 100);
-        
         // İlk soru başarıyla yüklendiyse timeout'u iptal et
         if (currentPhishingQuestion === 0 && window.phishingTimeoutId) {
             clearTimeout(window.phishingTimeoutId);
@@ -2133,128 +2109,6 @@
     
 
     
-    // Mobile Touch Optimizations
-    document.addEventListener('DOMContentLoaded', function() {
-        // Prevent zoom on double tap for better mobile experience
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // Add touch feedback for all interactive elements
-        const interactiveElements = document.querySelectorAll('img[alt*="btn"], img[alt*="Btn"], .main-btn-svg, .phishing-button, .share-question-item, .password-check-btn, .final-back-btn, .scoreboard-img');
-        
-        interactiveElements.forEach(element => {
-            // Touch start effect
-            element.addEventListener('touchstart', function(e) {
-                this.style.filter = 'brightness(0.8)';
-                this.style.transform = this.style.transform.replace('scale(1)', 'scale(0.95)') || 'scale(0.95)';
-            }, { passive: true });
-            
-            // Touch end effect
-            element.addEventListener('touchend', function(e) {
-                this.style.filter = '';
-                this.style.transform = this.style.transform.replace('scale(0.95)', 'scale(1)') || 'scale(1)';
-            }, { passive: true });
-            
-            // Touch cancel effect
-            element.addEventListener('touchcancel', function(e) {
-                this.style.filter = '';
-                this.style.transform = this.style.transform.replace('scale(0.95)', 'scale(1)') || 'scale(1)';
-            }, { passive: true });
-        });
-
-        // Improve input experience on mobile
-        const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
-        inputs.forEach(input => {
-            // Prevent zoom on input focus
-            input.addEventListener('focus', function() {
-                if (window.innerWidth < 768) {
-                    document.querySelector('meta[name="viewport"]').setAttribute('content', 
-                        'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-                }
-            });
-            
-            input.addEventListener('blur', function() {
-                if (window.innerWidth < 768) {
-                    document.querySelector('meta[name="viewport"]').setAttribute('content', 
-                        'width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0');
-                }
-            });
-        });
-
-        // Performance optimization: Reduce Firebase polling on mobile
-        if (window.innerWidth < 768 && isFirebaseEnabled) {
-            console.log("📱 Mobil cihaz algılandı - Firebase optimizasyonu aktif");
-        }
-
-        // Dynamic font sizing for phishing buttons (mobile fix)
-        function adjustPhishingButtonFonts() {
-            const phishingButtons = document.querySelectorAll('.phishing-button div');
-            phishingButtons.forEach(button => {
-                const container = button.closest('.phishing-button');
-                if (container) {
-                    const containerWidth = container.offsetWidth;
-                    const containerHeight = container.offsetHeight;
-                    
-                    // Calculate optimal font size based on container dimensions
-                    let fontSize = Math.min(
-                        containerWidth * 0.025,  // 2.5% of width
-                        containerHeight * 0.15,  // 15% of height
-                        16 // Maximum 16px
-                    );
-                    
-                    fontSize = Math.max(fontSize, 9); // Minimum 9px
-                    button.style.fontSize = fontSize + 'px';
-                    
-                    console.log(`📱 Button font adjusted: ${fontSize}px (${containerWidth}x${containerHeight})`);
-                }
-            });
-        }
-
-        // Apply font adjustment on window resize
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(adjustPhishingButtonFonts, 250);
-        });
-
-        // Apply font adjustment when phishing panel becomes visible
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    const target = mutation.target;
-                    if (target.id === 'phishing-panel' && target.style.display !== 'none') {
-                        setTimeout(adjustPhishingButtonFonts, 100);
-                    }
-                }
-            });
-        });
-
-        // Start observing phishing panel
-        const phishingPanel = document.getElementById('phishing-panel');
-        if (phishingPanel) {
-            observer.observe(phishingPanel, { attributes: true });
-        }
-
-        // Add service worker for PWA functionality
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(function(registration) {
-                        console.log('✅ Service Worker kayıtlı: ', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('❌ Service Worker kaydı başarısız: ', error);
-                    });
-            });
-        }
-    });
-
     // Yükleme ekranını gizle
     window.addEventListener('load', function() {
         setTimeout(function() {
@@ -2422,18 +2276,11 @@
                  }
              });
              
-                         console.log(`✅ ${buttons.length} phishing butonu hazırlandı`);
-            
-            // Font boyutlarını ayarla (mobil uyumluluk)
-            setTimeout(() => {
-                if (typeof adjustPhishingButtonFonts === 'function') {
-                    adjustPhishingButtonFonts();
-                }
-            }, 50);
-            
-            // İlk soruyu göster
-            currentPhishingQuestion = 0;
-            showNextPhishingQuestion();
+             console.log(`✅ ${buttons.length} phishing butonu hazırlandı`);
+             
+             // İlk soruyu göster
+             currentPhishingQuestion = 0;
+             showNextPhishingQuestion();
          };
     });
     </script>
