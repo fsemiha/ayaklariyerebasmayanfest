@@ -18,6 +18,15 @@
     <link rel="preload" href="fonts/conthrax-sb.otf" as="font" type="font/otf" crossorigin>
     <link rel="stylesheet" href="style.css?v=3.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" defer></script>
+    <!-- Mobile Console for debugging -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        // Only load console on mobile devices or when debugging
+        if (window.innerWidth <= 768 || window.location.search.includes('debug=1')) {
+            eruda.init();
+            console.log('📱 Mobil console aktif! Sağ alttaki simgeye tıklayın.');
+        }
+    </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js" defer></script>
